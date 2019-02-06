@@ -35,7 +35,7 @@ define([
         this.inherited(arguments);
         this.symbol = new PictureMarkerSymbol('http://static.arcgis.com/images/Symbols/Basic/YellowStickpin.png', 51, 51);
         this.provincias_name
-        
+        this.muni_name
       },
 
      onOpen: function() {
@@ -65,12 +65,7 @@ define([
               provincias_name.push({name:this.resp_prov_name1, value:this.resp_prov_name1});
                                                                          
           };
-          //lo almaceno para meter la info dentro del ComboBox  
-          var stateStore = new Memory({
-          //se asigna como dato provincias_name    
-              data: provincias_name
-
-          });
+         
                      
           //paso datos para completar el combobox de provincias  
           var comboBox = new ComboBox({
@@ -78,8 +73,8 @@ define([
               id: "provinciasName",
               name: "provincias_name",
               value: "Elija provincia",
-              store: stateStore,
-          //cuando el combo de provincias cambie, se extrae el nombre de provincia y se pasa al combo de municipio    
+              store: new Memory({ data: provincias_name }),
+          //cuando el combo de provincias cambie, se extrae el nombre de provincia y se hace el reques al municipio   
               onChange: function(prov_select){
                 var prov = this.item.name;
                 console.log("la provincia es " + this.item.name);
@@ -92,9 +87,8 @@ define([
                     dom.byId("status").value = xmlParser.innerXML(response);
                     var respuesta = dom.byId("status").value;
                     var resp_muni_name = response.getElementsByTagName('nm');
-
                     var muni_name = []
-                     //hago loop por resp_muni_name values (LOOP PARA municipios)      
+                    //hago loop por resp_muni_name values (LOOP PARA municipios)      
                     var i;
                     for (i=0; i< resp_muni_name.length; i++){
 
@@ -102,16 +96,40 @@ define([
                         dom.byId("status").value = xmlParser.textContent(resp_muni_name[i]);
                         var resp_muni_name1 = dom.byId("status");
                         this.resp_muni_name1=resp_muni_name1.value;
+
                     //dentro del loop paso los nombres de municipios con push a muni_name, dentro del array     
                         muni_name.push({name:this.resp_muni_name1, value:this.resp_muni_name1});
+                        //this.muni_name = muni_name
                                                                                    
                     };
-                    //lo almaceno para meter la info dentro del ComboBox  
-                    var stateStore2 = new Memory({
-                    //se asigna como dato muni_name    
-                        data: muni_name
+                   this.muni_name = muni_name
 
-                    });            
+                   console.log("numero de municipios encontrados " + this.muni_name.length)
+                }));// end EsriRequest
+                
+                  
+              }//end OnChange Provincias
+          },"stateSelect").startup(); //end ComboBox Provincias
+
+          new dijit.form.FilteringSelect({
+              id: "MuniNameName",
+              store: new Memory({ data: this.muni_name }),
+              autoComplete: true,
+              value: "Elija municipio",
+              style: "width: 150px;",
+              onChange: function(state){
+                 dijit.byId('provinciasName').query.state = this.item.state || /.*/;
+              }
+          }, "stateSelect2").startup();
+
+          }));// end Response
+
+      /*var stateStore2 = new Memory({
+                    //se asigna como dato muni_name    
+                        data: this.muni_name
+
+                    });
+                    console.log("el stateStore2 es  " + stateStore2)            
                     //paso datos para completar el combobox  
                     var comboBox2 = new ComboBox({
                         
@@ -119,28 +137,8 @@ define([
                         name: "municipio_name",
                         value: "Elija municipio",
                         store: stateStore2,
-                        reset: function(reset){
-                            var attachwidget = dijit.byId("MuniNameName");
-                            attachwidget.destroy();
-                            attachwidget= null
-                            
-                          
-                        }                                                                     
-                    },"stateSelect2").startup();
-                           
-                    
-                }));
-                
-                   
-              }//end OnChange Provincias
-              
-              
-          },"stateSelect").startup(); //end ComboBox Provincias
-            //dijit.byId("stateSelect").reset();
-
-          }));// end Response
-
-     
+                                                                                     
+                    },"stateSelect2").startup(); */
         //limpio campos una vez que se cierra el widget-----ESTAN DENTRO DEL FORM, POSIBLEMENTE LO BORRE.
         
         dom.byId("CoordX").innerHTML = ""
@@ -151,7 +149,7 @@ define([
       },
 
 
-//recojo el valor de los municipios en función de la provincia seleccionada
+
 
      
 
