@@ -17,8 +17,15 @@
 				<!--Provincia<select id="prov" type="text"></select>-->
 				
 				
-				<p>Provincia<input type="text" id="stateSelect" ></p><br>
-				<p>Municipios<input type="text" id="stateSelect2" ></p><br>
+				<!-- <p>Provincia<input type="text" id="stateSelect" ></p><br> -->
+				<div>Provincia
+					<select id="provincia" data-dojo-attach-event="onchange:cargaMunicipios"></select>
+				</div>
+				<br>
+				<div>Municipio
+					<select id="municipio"></select>
+				</div>
+				<!-- <p>Municipios<input type="text" id="stateSelect2" ></p><br> -->
 
 				
 				<p>Poligono<input class="dijitReset dijitInputInner" name= "poligonos" role="textbox" type="text" id = "pol" name= ""></p><br>
